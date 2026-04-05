@@ -41,7 +41,7 @@ class MarketController {
                 price: PokemonModel.getPriceForPokemon(pokemon.id, pricesCache),
             }));
 
-            res.render('marketplace/index', {
+            res.render('home', {
                 pokemon: pokemonWithPrices,
                 types: typesCache,
                 cartCount: req.session?.cart?.getItemCount() || 0,
@@ -116,7 +116,7 @@ class MarketController {
             const items = cart ? cart.getItems() : [];
             const summary = cart ? cart.getBillingSummary() : {};
 
-            res.render('cart/index', {
+            res.render('cart', {
                 items,
                 summary,
                 cartCount: items.length,

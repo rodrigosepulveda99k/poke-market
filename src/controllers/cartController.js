@@ -3,6 +3,7 @@
  */
 
 const CartModel = require('../models/cartModel');
+const { Order } = require('../models/orderModel');
 
 class CartController {
     /**
@@ -111,24 +112,34 @@ class CartController {
     /**
      * Checkout
      */
-    static checkout(req, res) {
+    static async checkout(req, res) {
         try {
             if (!req.session.cart || req.session.cart.getItems().length === 0) {
                 return res.status(400).json({ error: 'Cart is empty' });
             }
 
-            const checkoutData = {
-                items: req.session.cart.getItems(),
-                summary: req.session.cart.getBillingSummary(),
-                timestamp: new Date().toISOString(),
-            };
+            const items = req.session.cart.getItems();
+            const summary = req.session.cart.getBillingSummary();
+
+            // Save order to database
+            try {
+                const order = await Order.createOrder(summary, items);
+                console.log(`✅ Order ${order.orderNumber} saved to database`);
+            } catch (dbError) {
+                console.error('Database error during checkout:', dbError);
+                // Continue with checkout even if database fails (graceful degradation)
+            }
 
             // Clear cart after checkout
             req.session.cart.clear();
 
             res.json({
                 success: true,
-                order: checkoutData,
+                order: {
+                    items,
+                    summary,
+                    timestamp: new Date().toISOString()
+                },
                 message: 'Order placed successfully!',
             });
         } catch (error) {

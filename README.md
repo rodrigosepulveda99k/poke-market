@@ -192,7 +192,88 @@ open index.html
 
 ---
 
-## 💻 Usage
+## � Production Deployment
+
+### Render Deployment (Recommended)
+
+Poké-Market is configured for easy deployment to [Render](https://render.com) with full database support.
+
+#### Step 1: Prepare for Deployment
+
+```bash
+# Install production dependencies
+npm install
+
+# Create production environment file
+cp .env.example .env
+# Edit .env with your production values
+```
+
+#### Step 2: Deploy to Render
+
+1. **Connect Repository**: Link your GitHub repository to Render
+2. **Create Web Service**:
+   - **Runtime**: Node.js
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+3. **Environment Variables**:
+   ```
+   NODE_ENV=production
+   PORT=10000
+   SESSION_SECRET=your-secret-key-here
+   DATABASE_URL=postgresql://user:pass@host:port/db
+   ```
+4. **Database Setup**: Add a PostgreSQL database instance in Render
+5. **Deploy**: Click "Create Web Service"
+
+#### Step 3: Access Your App
+
+Once deployed, your Poké-Market will be available at:
+```
+https://your-app-name.onrender.com
+```
+
+### Alternative Deployment Options
+
+#### Heroku Deployment
+
+```bash
+# Add Heroku buildpack
+heroku create your-poke-market-app
+heroku buildpacks:set heroku/nodejs
+
+# Set environment variables
+heroku config:set NODE_ENV=production
+heroku config:set SESSION_SECRET=your-secret-key
+
+# Deploy
+git push heroku main
+```
+
+#### Vercel Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Set environment variables in Vercel dashboard
+```
+
+### Database Configuration
+
+The app supports both session-based cart storage (default) and PostgreSQL persistence:
+
+- **Without Database**: Cart data stored in user sessions only
+- **With Database**: Orders saved to PostgreSQL for analytics and order history
+
+Set `DATABASE_URL` environment variable to enable database features.
+
+---
+
+## �💻 Usage
 
 ### Main Features Walkthrough
 

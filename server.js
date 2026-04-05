@@ -8,6 +8,8 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const expressLayouts = require('express-ejs-layouts');
+const { testConnection, initializeDatabase } = require('./src/models/db');
 
 const app = express();
 
@@ -27,6 +29,8 @@ app.use(session({
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
+app.use(expressLayouts);
+app.set('layout', 'layout');
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -36,11 +40,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ============== Routes ==============
-const marketRoutes = require('./src/routes/market');
-const apiRoutes = require('./src/routes/api');
-
-app.use('/', marketRoutes);
-app.use('/api', apiRoutes);
+const routes = require('./src/routes');
+app.use('/', routes);
 
 // ============== Error Handling ==============
 app.use((err, req, res, next) => {
@@ -65,15 +66,29 @@ app.use((req, res) => {
 });
 
 // ============== Server Start ==============
-app.listen(PORT, () => {
-    console.log(`
+async function startServer() {
+    try {
+        // Test database connection (optional)
+        const dbConnected = await testConnection();
+        if (dbConnected) {
+            await initializeDatabase();
+        }
+
+        app.listen(PORT, () => {
+            console.log(`
     ╔════════════════════════════════════╗
     ║     🎮 Poké-Market Server 🛒      ║
     ║     ⚡ Running on port ${PORT}       ║
     ║     📍 http://localhost:${PORT}     ║
     ║     ${NODE_ENV === 'development' ? '🔧 Development Mode' : '🚀 Production Mode'}        ║
+    ║     ${dbConnected ? '🗄️  Database Connected' : '💾 Session Storage Only'}        ║
     ╚════════════════════════════════════╝
     `);
-});
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+}
 
-module.exports = app;
+startServer();
