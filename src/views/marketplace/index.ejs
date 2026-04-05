@@ -1,0 +1,296 @@
+<!-- Marketplace View -->
+<section class="marketplace-section">
+    <div class="marketplace-container">
+        <!-- Filters Panel -->
+        <aside class="filters-panel">
+            <h2>Find Your Pokémon</h2>
+
+            <!-- Search Bar -->
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Search by name..."
+                    class="search-input"
+                >
+            </div>
+
+            <!-- Type Filters -->
+            <div class="filter-group">
+                <h3>Filter by Type</h3>
+                <div class="type-buttons" id="type-filter">
+                    <% types.forEach(type => { %>
+                        <button class="type-btn" data-type="<%= type.name %>">
+                            <%= type.name %>
+                        </button>
+                    <% }); %>
+                </div>
+                <button id="clear-filters" class="btn btn-secondary">Clear Filters</button>
+            </div>
+        </aside>
+
+        <!-- Pokémon Grid -->
+        <section class="catalog-section">
+            <div class="pokemon-grid" id="pokemon-grid">
+                <% pokemon.forEach(p => { %>
+                    <div class="pokemon-card fade-in" data-pokemon-id="<%= p.id %>">
+                        <div class="pokemon-card-image">
+                            <img src="<%= p.sprites?.other?.['official-artwork']?.front_default || p.sprites?.front_default || 'https://via.placeholder.com/150' %>" 
+                                 alt="<%= p.name %>" 
+                                 loading="lazy">
+                        </div>
+                        <div class="pokemon-card-body">
+                            <h3 class="pokemon-card-name"><%= p.name %></h3>
+                            <div class="pokemon-types">
+                                <% p.types.slice(0, 2).forEach(t => { %>
+                                    <span class="type-badge <%= t.type.name %>"><%= t.type.name %></span>
+                                <% }); %>
+                            </div>
+                            <div class="pokemon-price">$<%= p.price.toFixed(2) %></div>
+                            <button class="btn btn-primary view-details-btn" data-pokemon-id="<%= p.id %>">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+            <div class="spinner" id="loading-spinner"></div>
+        </section>
+    </div>
+</section>
+
+<!-- Pokémon Detail Modal -->
+<section id="pokemon-modal" class="modal hidden">
+    <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <div class="modal-body">
+            <div class="modal-image">
+                <img id="modal-sprite" src="" alt="Pokémon" class="modal-sprite">
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-name"></h2>
+                <div class="modal-types" id="modal-types"></div>
+
+                <div class="modal-stats">
+                    <h3>Base Stats</h3>
+                    <div class="stats-grid" id="modal-stats"></div>
+                </div>
+
+                <div class="modal-details">
+                    <p><strong>Height:</strong> <span id="modal-height"></span></p>
+                    <p><strong>Weight:</strong> <span id="modal-weight"></span></p>
+                    <p><strong>Abilities:</strong> <span id="modal-abilities"></span></p>
+                </div>
+
+                <div class="modal-price">
+                    <span id="modal-price" class="price-large"></span>
+                </div>
+
+                <button id="modal-add-to-cart" class="btn btn-primary btn-large">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Evolution Chain -->
+        <div id="modal-evolutions" class="modal-section hide">
+            <h3>Evolution Chain</h3>
+            <div class="evolutions-list"></div>
+        </div>
+
+        <!-- Moves -->
+        <div id="modal-moves" class="modal-section hide">
+            <h3>Signature Moves <span class="moves-limit">(Top 10)</span></h3>
+            <div class="moves-list"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Client-side JavaScript for marketplace interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const typeFilter = document.getElementById('type-filter');
+        const clearFilterBtn = document.getElementById('clear-filters');
+        const modal = document.getElementById('pokemon-modal');
+        const closeBtn = modal.querySelector('.modal-close');
+
+        let selectedType = null;
+
+        // Search functionality
+        searchInput?.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.pokemon-card');
+            cards.forEach(card => {
+                const name = card.querySelector('.pokemon-card-name').textContent.toLowerCase();
+                card.style.display = name.includes(term) ? 'block' : 'none';
+            });
+        });
+
+        // Type filtering
+        typeFilter?.addEventListener('click', function(e) {
+            if (e.target.classList.contains('type-btn')) {
+                if (e.target.classList.contains('active')) {
+                    e.target.classList.remove('active');
+                    selectedType = null;
+                } else {
+                    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    selectedType = e.target.dataset.type;
+                }
+                filterCards();
+            }
+        });
+
+        clearFilterBtn?.addEventListener('click', function() {
+            selectedType = null;
+            searchInput.value = '';
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.pokemon-card').forEach(card => card.style.display = 'block');
+        });
+
+        // View details
+        document.querySelectorAll('.view-details-btn').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                const pokemonId = this.dataset.pokemonId;
+                try {
+                    const response = await fetch(`/api/pokemon/${pokemonId}`);
+                    const data = await response.json();
+                    renderModal(data);
+                    modal.classList.remove('hidden');
+                    modal.classList.add('active');
+                } catch (error) {
+                    console.error('Error fetching Pokémon:', error);
+                }
+            });
+        });
+
+        // Close modal
+        closeBtn?.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('active');
+        });
+
+        modal?.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('active');
+            }
+        });
+
+        // Add to cart
+        document.getElementById('modal-add-to-cart')?.addEventListener('click', async function() {
+            const pokemonId = this.dataset.pokemonId;
+            const price = parseFloat(this.dataset.price);
+            // Find pokemon in the page
+            const card = document.querySelector(`[data-pokemon-id="${pokemonId}"]`);
+            const name = card?.querySelector('.pokemon-card-name')?.textContent || 'Pokémon';
+            
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pokemon: { id: pokemonId, name, price } })
+                });
+                const result = await response.json();
+                showNotification(result.message, 'success');
+                updateCartCount(result.cartCount);
+                modal.classList.add('hidden');
+                modal.classList.remove('active');
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+            }
+        });
+
+        function filterCards() {
+            const cards = document.querySelectorAll('.pokemon-card');
+            cards.forEach(card => {
+                const types = card.querySelectorAll('.type-badge');
+                let hasType = false;
+                types.forEach(type => {
+                    if (type.textContent.toLowerCase() === selectedType) {
+                        hasType = true;
+                    }
+                });
+                card.style.display = !selectedType || hasType ? 'block' : 'none';
+            });
+        }
+
+        function renderModal(data) {
+            const { pokemon, price, evolutions, moves } = data;
+            document.getElementById('modal-sprite').src = pokemon.sprites?.other?.['official-artwork']?.front_default || pokemon.sprites?.front_default;
+            document.getElementById('modal-name').textContent = pokemon.name;
+            document.getElementById('modal-price').textContent = `$${price.toFixed(2)}`;
+
+            // Types
+            const typesHtml = pokemon.types.map(t => `<span class="type-badge ${t.type.name}">${t.type.name}</span>`).join('');
+            document.getElementById('modal-types').innerHTML = typesHtml;
+
+            // Stats
+            const statsHtml = pokemon.stats.map(s => `
+                <div class="stat-item">
+                    <div class="stat-label">${s.stat.name}</div>
+                    <div class="stat-value">${s.base_stat}</div>
+                </div>
+            `).join('');
+            document.getElementById('modal-stats').innerHTML = statsHtml;
+
+            // Details
+            document.getElementById('modal-height').textContent = `${(pokemon.height / 10).toFixed(1)} m`;
+            document.getElementById('modal-weight').textContent = `${(pokemon.weight / 10).toFixed(1)} kg`;
+            document.getElementById('modal-abilities').textContent = pokemon.abilities.map(a => a.ability.name).join(', ');
+
+            // Add to cart button
+            const addBtn = document.getElementById('modal-add-to-cart');
+            addBtn.dataset.pokemonId = pokemon.id;
+            addBtn.dataset.price = price;
+
+            // Evolutions
+            if (evolutions && evolutions.length > 0) {
+                document.getElementById('modal-evolutions').classList.remove('hide');
+                document.querySelector('.evolutions-list').innerHTML = evolutions.map((e, i) => `
+                    <div class="evolution-item">
+                        <span class="evolution-level">Lv. ${e.level}</span>
+                        <span class="evolution-name">${e.name}</span>
+                        <span class="evolution-trigger">(${e.trigger})</span>
+                        ${i < evolutions.length - 1 ? '<span class="evolution-arrow">→</span>' : ''}
+                    </div>
+                `).join('');
+            }
+
+            // Moves
+            if (moves && moves.length > 0) {
+                document.getElementById('modal-moves').classList.remove('hide');
+                document.querySelector('.moves-list').innerHTML = moves.map(m => `
+                    <div class="move-item">
+                        <div class="move-header">
+                            <strong>${m.name}</strong>
+                            <span class="move-type">${m.type?.name || 'normal'}</span>
+                        </div>
+                        <div class="move-details">
+                            <span><strong>Power:</strong> ${m.power || '-'}</span>
+                            <span><strong>Accuracy:</strong> ${m.accuracy || '-'}%</span>
+                            <span><strong>PP:</strong> ${m.pp || '-'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#FF0000';
+            notification.classList.remove('hidden');
+            notification.classList.add('active');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+                notification.classList.remove('active');
+            }, 3000);
+        }
+
+        function updateCartCount(count) {
+            document.querySelector('.cart-count').textContent = count;
+        }
+    });
+</script>

@@ -1,0 +1,20 @@
+<!-- Header Partial -->
+<header class="header">
+    <div class="header-container">
+        <div class="logo">
+            <div class="pokeball-icon"></div>
+            <h1>Poké-Market</h1>
+        </div>
+        <nav class="nav">
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link active">Marketplace</a></li>
+                <li><a href="/cart" class="nav-link">Cart</a></li>
+            </ul>
+        </nav>
+        <div class="cart-toggle">
+            <button id="cart-icon" class="cart-btn" onclick="window.location.href='/cart'">
+                🛒 <span class="cart-count"><%= cartCount || 0 %></span>
+            </button>
+        </div>
+    </div>
+</header>

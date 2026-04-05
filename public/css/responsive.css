@@ -1,0 +1,671 @@
+/* Responsive Design - Tablets & Medium Screens */
+
+@media (max-width: 1024px) {
+    .marketplace-container {
+        grid-template-columns: 200px 1fr;
+        gap: 1.5rem;
+    }
+
+    .filters-panel {
+        top: 90px;
+    }
+
+    .pokemon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .modal-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .modal-image {
+        min-height: 250px;
+    }
+
+    .modal-sprite {
+        height: 200px;
+    }
+
+    .cart-table {
+        font-size: 0.9rem;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+/* Mobile / Small Screens */
+@media (max-width: 768px) {
+    /* Header Adjustments */
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0.75rem;
+    }
+
+    .logo h1 {
+        font-size: 1.25rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .cart-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Main Content */
+    main {
+        padding: 1rem;
+    }
+
+    /* Marketplace Layout */
+    .marketplace-container {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-panel {
+        position: static;
+        border-left: none;
+        border-top: 4px solid var(--primary-red);
+        margin-bottom: 2rem;
+    }
+
+    /* Pokémon Grid */
+    .pokemon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .pokemon-card-name {
+        font-size: 0.8rem;
+    }
+
+    .pokemon-price {
+        font-size: 1rem;
+    }
+
+    .pokemon-card .btn {
+        font-size: 0.75rem;
+        padding: 0.4rem;
+    }
+
+    /* Search & Filter */
+    h1, h2, h3 {
+        font-size: clamp(0.9rem, 3vw, 1.5rem);
+    }
+
+    .search-input {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .type-buttons {
+        gap: 0.4rem;
+    }
+
+    .type-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    /* Modal */
+    .modal {
+        padding: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0;
+        max-height: 100vh;
+    }
+
+    .modal-body {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .modal-info h2 {
+        font-size: 1.1rem;
+    }
+
+    .modal-stats h3,
+    .modal-details {
+        font-size: 0.85rem;
+    }
+
+    .stat-item {
+        padding: 0.5rem;
+    }
+
+    .modal-price {
+        font-size: 1.2rem;
+    }
+
+    /* Cart Table Responsiveness */
+    .cart-table {
+        font-size: 0.85rem;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .cart-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Checkout Section */
+    .checkout-section {
+        padding: 1.5rem 1rem;
+    }
+
+    .checkout-summary h3 {
+        font-size: 1rem;
+    }
+
+    .summary-line {
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+    }
+
+    .summary-line.total {
+        font-size: 1rem;
+    }
+
+    .btn-large {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Notification */
+    .notification {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    /* Typography Adjustments */
+    body {
+        font-size: 0.95rem;
+    }
+
+    /* Filter Group */
+    .filter-group {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Extra Small Screens (Mobile Phones) */
+@media (max-width: 480px) {
+    /* Header */
+    .header-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .logo {
+        gap: 0.5rem;
+    }
+
+    .logo h1 {
+        font-size: 1rem;
+    }
+
+    .pokeball-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .nav-links {
+        gap: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .cart-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .cart-count {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+
+    /* Main Content */
+    main {
+        padding: 0.75rem;
+    }
+
+    h1, h2, h3 {
+        font-size: clamp(0.75rem, 2.5vw, 1rem);
+    }
+
+    /* Pokémon Grid */
+    .pokemon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .pokemon-card {
+        border-radius: 4px;
+    }
+
+    .pokemon-card-image {
+        height: 120px;
+    }
+
+    .pokemon-card-image img {
+        height: 90px;
+    }
+
+    .pokemon-card-body {
+        padding: 0.75rem;
+    }
+
+    .pokemon-card-name {
+        font-size: 0.7rem;
+    }
+
+    .type-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .pokemon-price {
+        font-size: 0.9rem;
+    }
+
+    /* Search Input */
+    .search-input {
+        font-size: 1rem;
+        padding: 0.6rem;
+    }
+
+    .type-buttons {
+        gap: 0.3rem;
+    }
+
+    .type-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+    }
+
+    /* Modal */
+    .modal-close {
+        font-size: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 0.75rem;
+    }
+
+    .modal-image {
+        min-height: 200px;
+    }
+
+    .modal-sprite {
+        height: 150px;
+    }
+
+    .modal-info h2 {
+        font-size: 0.95rem;
+    }
+
+    .modal-types {
+        gap: 0.3rem;
+    }
+
+    .modal-stats h3,
+    .modal-details {
+        font-size: 0.8rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat-item {
+        padding: 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .stat-value {
+        font-size: 0.9rem;
+    }
+
+    .modal-details p {
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .modal-price {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Cart Table Mobile View */
+    .cart-table {
+        display: block;
+    }
+
+    .cart-table thead {
+        display: none;
+    }
+
+    .cart-table tbody,
+    .cart-table tr,
+    .cart-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .cart-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-gray);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .cart-table td {
+        padding: 0.5rem;
+        position: relative;
+        padding-left: 40%;
+        text-align: right;
+        border: none;
+    }
+
+    .cart-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 35%;
+        background-color: var(--light-gray);
+        font-weight: 600;
+        text-align: left;
+        padding: 0.5rem;
+    }
+
+    .quantity-control {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .quantity-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 0.8rem;
+    }
+
+    /* Checkout */
+    .checkout-summary h3 {
+        font-size: 0.9rem;
+    }
+
+    .summary-line {
+        font-size: 0.8rem;
+        padding: 0.4rem 0;
+    }
+
+    .summary-line.total {
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-large {
+        padding: 0.6rem 1rem;
+    }
+
+    /* Empty Cart Message */
+    .empty-cart-message {
+        padding: 2rem 1rem;
+        font-size: 1rem;
+    }
+
+    /* Notification */
+    .notification {
+        bottom: 0.75rem;
+        right: 0.75rem;
+        left: 0.75rem;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    /* Filters Panel in Mobile */
+    .filters-panel {
+        border-top: 4px solid var(--primary-red);
+        border-left: none;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+    }
+
+    .filters-panel h2 {
+        font-size: 0.9rem;
+    }
+
+    .filters-panel h3 {
+        font-size: 0.8rem;
+    }
+
+    /* Body Font Size */
+    body {
+        font-size: 0.9rem;
+    }
+
+    /* Utility adjustments */
+    .btn:disabled {
+        opacity: 0.6;
+    }
+}
+
+/* Landscape Mode Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .header-container {
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .logo h1 {
+        font-size: 0.9rem;
+    }
+
+    .nav-links {
+        gap: 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .pokemon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .pokemon-card-body {
+        padding: 0.5rem;
+    }
+
+    .modal-body {
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .modal-sprite {
+        height: 180px;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 0.4rem 0.3rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    header,
+    nav,
+    .cart-btn,
+    .filters-panel,
+    .btn,
+    .modal {
+        display: none !important;
+    }
+
+    body {
+        background-color: var(--background-white);
+    }
+
+    .pokemon-card,
+    .cart-table {
+        page-break-inside: avoid;
+    }
+}
+
+/* Dark Mode Support (Optional - for future implementation) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-white: #1a1a1a;
+        --dark-text: #ffffff;
+        --light-gray: #2d2d2d;
+        --border-gray: #444;
+    }
+
+    body {
+        background-color: #0d0d0d;
+    }
+
+    .header {
+        background-color: var(--background-white);
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Responsive Modal Sections */
+@media (max-width: 768px) {
+    .modal-section {
+        padding: 1rem;
+    }
+
+    .modal-section h3 {
+        font-size: 0.9rem;
+    }
+
+    .evolutions-list {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .evolution-item {
+        width: 100%;
+        padding: 0.5rem;
+    }
+
+    .evolution-arrow {
+        display: none;
+    }
+
+    .moves-list {
+        grid-template-columns: 1fr;
+    }
+
+    .move-details {
+        grid-template-columns: 1fr;
+    }
+
+    .items-list {
+        grid-template-columns: 1fr;
+    }
+
+    .item-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .item-image {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-section {
+        padding: 0.75rem;
+    }
+
+    .modal-section h3 {
+        font-size: 0.8rem;
+    }
+
+    .evolution-item {
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: center;
+        padding: 0.5rem;
+    }
+
+    .move-item {
+        padding: 0.75rem;
+    }
+
+    .move-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .move-details {
+        grid-template-columns: repeat(2, 1fr);
+        font-size: 0.75rem;
+    }
+
+    .item-card {
+        padding: 0.75rem;
+    }
+
+    .item-image {
+        width: 40px;
+        height: 40px;
+    }
+
+    .item-info strong {
+        font-size: 0.9rem;
+    }
+
+    .item-info p {
+        font-size: 0.75rem;
+    }
+}

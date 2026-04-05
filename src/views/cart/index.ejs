@@ -1,0 +1,222 @@
+<!-- Shopping Cart View -->
+<section class="cart-section">
+    <div class="cart-container">
+        <h1>Shopping Cart</h1>
+
+        <% if (items.length === 0) { %>
+            <!-- Empty Cart -->
+            <div class="empty-cart">
+                <div class="empty-icon">🛒</div>
+                <h2>Your cart is empty</h2>
+                <p>Start adding your favorite Pokémon to the cart!</p>
+                <a href="/" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        <% } else { %>
+            <div class="cart-content">
+                <!-- Cart Items Table -->
+                <div class="cart-items">
+                    <h2>Items (<span id="item-count"><%= items.length %></span>)</h2>
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Pokémon</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items-body">
+                            <% items.forEach(item => { %>
+                                <tr class="cart-row" data-pokemon-id="<%= item.pokemon.id %>">
+                                    <td class="pokemon-info">
+                                        <span class="pokemon-name"><%= item.pokemon.name %></span>
+                                    </td>
+                                    <td>
+                                        <div class="type-badges">
+                                            <span class="type-badge">normal</span>
+                                        </div>
+                                    </td>
+                                    <td class="price">$<%= item.pokemon.price.toFixed(2) %></td>
+                                    <td class="quantity">
+                                        <div class="quantity-control">
+                                            <button class="qty-btn decrease" data-pokemon-id="<%= item.pokemon.id %>">−</button>
+                                            <input type="number" class="qty-input" value="<%= item.quantity %>" 
+                                                   data-pokemon-id="<%= item.pokemon.id %>" min="1" max="99">
+                                            <button class="qty-btn increase" data-pokemon-id="<%= item.pokemon.id %>">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="subtotal">
+                                        $<span class="subtotal-value"><%= (item.pokemon.price * item.quantity).toFixed(2) %></span>
+                                    </td>
+                                    <td class="actions">
+                                        <button class="btn btn-danger btn-small remove-btn" data-pokemon-id="<%= item.pokemon.id %>">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cart Summary -->
+                <aside class="cart-summary">
+                    <h2>Order Summary</h2>
+                    <div class="summary-box">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <strong>$<span id="subtotal"><%= summary.subtotal.toFixed(2) %></span></strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax (21%):</span>
+                            <strong>$<span id="tax"><%= summary.tax.toFixed(2) %></span></strong>
+                        </div>
+                        <div class="summary-row summary-total">
+                            <span>Total:</span>
+                            <strong>$<span id="total"><%= summary.total.toFixed(2) %></span></strong>
+                        </div>
+                        <div class="summary-items">
+                            <p>Items: <strong><span id="total-items"><%= items.length %></span></strong></p>
+                        </div>
+                    </div>
+
+                    <button id="checkout-btn" class="btn btn-primary btn-block">
+                        Proceed to Checkout
+                    </button>
+                    <a href="/" class="btn btn-secondary btn-block">
+                        Continue Shopping
+                    </a>
+                </aside>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Notification Toast -->
+<div id="notification" class="notification hidden"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Quantity controls
+        document.querySelectorAll('.decrease').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const pokemonId = this.dataset.pokemonId;
+                const input = document.querySelector(`input[data-pokemon-id="${pokemonId}"]`);
+                const newQty = Math.max(1, parseInt(input.value) - 1);
+                updateQuantity(pokemonId, newQty);
+            });
+        });
+
+        document.querySelectorAll('.increase').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const pokemonId = this.dataset.pokemonId;
+                const input = document.querySelector(`input[data-pokemon-id="${pokemonId}"]`);
+                const newQty = Math.min(99, parseInt(input.value) + 1);
+                updateQuantity(pokemonId, newQty);
+            });
+        });
+
+        document.querySelectorAll('.qty-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const qty = parseInt(this.value) || 1;
+                const limited = Math.min(99, Math.max(1, qty));
+                this.value = limited;
+                updateQuantity(this.dataset.pokemonId, limited);
+            });
+        });
+
+        // Remove item
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const pokemonId = this.dataset.pokemonId;
+                try {
+                    const response = await fetch('/api/cart/remove', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pokemonId })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        location.reload();
+                    } else {
+                        showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error removing from cart:', error);
+                    showNotification('Failed to remove item', 'error');
+                }
+            });
+        });
+
+        // Checkout
+        document.getElementById('checkout-btn')?.addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/cart/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Checkout successful!', 'success');
+                    setTimeout(() => {
+                        location.href = '/';
+                    }, 2000);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error during checkout:', error);
+                showNotification('Checkout failed', 'error');
+            }
+        });
+
+        async function updateQuantity(pokemonId, quantity) {
+            try {
+                const response = await fetch('/api/cart/update-quantity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pokemonId, quantity })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    updateSummary(result.summary);
+                    updateSubtotal(pokemonId, quantity);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                showNotification('Failed to update quantity', 'error');
+            }
+        }
+
+        function updateSubtotal(pokemonId, quantity) {
+            const row = document.querySelector(`[data-pokemon-id="${pokemonId}"]`);
+            const price = parseFloat(row.querySelector('.price').textContent.replace('$', ''));
+            const subtotal = (price * quantity).toFixed(2);
+            row.querySelector('.subtotal-value').textContent = subtotal;
+        }
+
+        function updateSummary(summary) {
+            document.getElementById('subtotal').textContent = summary.subtotal.toFixed(2);
+            document.getElementById('tax').textContent = summary.tax.toFixed(2);
+            document.getElementById('total').textContent = summary.total.toFixed(2);
+            document.getElementById('total-items').textContent = summary.itemCount;
+            document.getElementById('item-count').textContent = summary.itemCount;
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#FF0000';
+            notification.classList.remove('hidden');
+            notification.classList.add('active');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+                notification.classList.remove('active');
+            }, 3000);
+        }
+    });
+</script>
